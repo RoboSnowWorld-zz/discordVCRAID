@@ -1,5 +1,5 @@
 # discordVCRAID
-I wrote my first discord raid tool WITH VOICE SUPPORT
+I created my first discord raid tool WITH VOICE SUPPORT
 
 ## Commands
 `help` to open commands description
