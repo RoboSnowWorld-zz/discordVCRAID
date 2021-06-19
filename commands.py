@@ -4,6 +4,7 @@ globals = {
     'tokens': voice_raid.tokens,
     'music': voice_raid.music,
     'help': voice_raid.show_help,
+    'exit': voice_raid.exit_raidtool,
 }
 
 tokens = {
@@ -26,4 +27,5 @@ description = {
                                  'specify Channel(s) ID in the channels.txt',
     'music set [file]': 'Set music to play',
     'tokens invite [link]': 'Set invite link',
+    'exit': 'close raidtool',
 }

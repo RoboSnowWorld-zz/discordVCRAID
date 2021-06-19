@@ -7,6 +7,7 @@ import multiprocessing
 import logging
 import proxygen
 from itertools import cycle
+import sys
 
 import checker
 import commands
@@ -66,7 +67,7 @@ def join(command):
         pass
 
     global connection_process
-    connection_process = multiprocessing.Process(target=connect, args=(args,))
+    connection_process = multiprocessing.Process(target=connect_tokens, args=(args,))
     connection_process.start()
 
 
@@ -76,9 +77,12 @@ def show_help(message):
 
 
 def stop(command):
-    for bot in bots:
-        bot.kill()
-    connection_process.kill()
+    try:
+        for bot in bots:
+            bot.kill()
+        connection_process.kill()
+    except AttributeError:
+        return
     print('\x1b[32;1mSuccessfully\x1b[39;49m')
 
 
@@ -94,6 +98,9 @@ def check_tokens(command):
         print('Filename must be with file extension. Example: tokens check tokens.txt \n')
         print('tokens check [file]')
 
+def exit_raidtool(command):
+    stop(command)
+    sys.exit()
 
 def set_invite_link(command):
     global invite_link
@@ -128,11 +135,11 @@ def join_queue(command):
 
     args = 'join_queue'
     global connection_process
-    connection_process = multiprocessing.Process(target=connect, args=(args,))
+    connection_process = multiprocessing.Process(target=connect_tokens, args=(args,))
     connection_process.start()
 
 
-def connect(run_args):
+def connect_tokens(run_args):
     if music_file:
         for token in token_list:
             client = Bot()
@@ -141,7 +148,7 @@ def connect(run_args):
             bot.start()
             bots.append(bot)
             global delay
-            if 'join_queue' in run_args: time.sleep(delay + 1)
+            if 'join_queue' in run_args: time.sleep(delay)
     else:
         print("\x1b[31;1mSet music file - music set [file]\x1b[39;49m")
 
@@ -179,14 +186,14 @@ class Bot(discord.Client):
                 if r.status_code == 200:
                     print("[LOG] Bot joined server")
                 else: print("[WARN]\x1b[31;1m Cannot join the server. Try to change IP or use another tokens\x1b[39;49m")
-            try:
-                channel = await self.fetch_channel(ch_id)
-                vc = await channel.connect()
-                vc.play(discord.FFmpegPCMAudio(
-                    source=current_path + '/' + music_file))
-                print("[LOG] Bot entered the room")
-                time.sleep(delay)
-                await vc.disconnect()
-            except discord.errors.Forbidden:
-                print('[WARN]\x1b[31;1m Cannot join the room\x1b[39;49m')
+            channel = await self.fetch_channel(ch_id)
+            vc = await channel.connect()
+            vc.play(discord.FFmpegPCMAudio(
+                source=current_path + '/' + music_file))
+            print("[LOG] Bot entered the room")
+            time.sleep(delay)
+            await vc.disconnect()
             await self.close()
+
+    async def on_error(self, event_method, *args, **kwargs):
+        pass
