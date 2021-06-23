@@ -1,6 +1,6 @@
 import voice_raid
 
-globals = {
+global_cmds = {
     'tokens': voice_raid.tokens,
     'music': voice_raid.music,
     'help': voice_raid.show_help,

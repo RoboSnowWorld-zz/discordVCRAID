@@ -22,7 +22,7 @@ print('Discord voice tool by RoboSnowWorld \n')
 while True:
     command = input()
     try:
-        commands.globals[command.split()[0]](command)
+        commands.global_cmds[command.split()[0]](command)
     except KeyError:
         print("\x1b[31;1mUnknown command. Type help to see commands description\x1b[39;49m")
     except IndexError:

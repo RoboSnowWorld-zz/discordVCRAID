@@ -98,9 +98,11 @@ def check_tokens(command):
         print('Filename must be with file extension. Example: tokens check tokens.txt \n')
         print('tokens check [file]')
 
+
 def exit_raidtool(command):
     stop(command)
     sys.exit()
+
 
 def set_invite_link(command):
     global invite_link
@@ -148,7 +150,8 @@ def connect_tokens(run_args):
             bot.start()
             bots.append(bot)
             global delay
-            if 'join_queue' in run_args: time.sleep(delay)
+            if 'join_queue' in run_args:
+                time.sleep(delay)
     else:
         print("\x1b[31;1mSet music file - music set [file]\x1b[39;49m")
 
@@ -185,7 +188,8 @@ class Bot(discord.Client):
                 print('[LOG]', r)
                 if r.status_code == 200:
                     print("[LOG] Bot joined server")
-                else: print("[WARN]\x1b[31;1m Cannot join the server. Try to change IP or use another tokens\x1b[39;49m")
+                else:
+                    print("[WARN]\x1b[31;1m Cannot join the server. Try to change IP or use another tokens\x1b[39;49m")
             channel = await self.fetch_channel(ch_id)
             vc = await channel.connect()
             vc.play(discord.FFmpegPCMAudio(
