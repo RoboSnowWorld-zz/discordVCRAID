@@ -20,4 +20,4 @@ Enter channel ID in channels.txt
 `tokens join_queue 5` start raiding
 
 ## Support
-Telegram `@xtichkdydykiddt
+Telegram `@xtichkdydykiddt`
