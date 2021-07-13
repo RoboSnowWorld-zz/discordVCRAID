@@ -15,7 +15,6 @@ import commands
 tracemalloc.start()
 proxies = proxygen.get_proxies()
 proxy_pool = cycle(proxies)
-music_file = ''
 channels = []
 token_list = []
 bots = []
@@ -23,7 +22,10 @@ invite_link = ''
 channel_id = 0
 delay = 8
 connection_process = ''
-current_path = os.path.dirname(os.path.realpath(__file__))
+dirname = os.path.dirname(__file__)
+channels_path = os.path.join(dirname, 'channels.txt')
+music_path = ''
+tokens_path = os.path.join(dirname, 'workingtokens.txt')
 token_dict = {}
 
 logging.basicConfig(filename="errors.log", level=logging.ERROR, filemode='w')
@@ -37,7 +39,7 @@ def tokens(command):
     token_list = []
     channels = []
     try:
-        f = open(current_path + "/" + "workingtokens.txt")
+        f = open(tokens_path)
         for line in f.read().splitlines():  # read rest of lines
             token_list.append(line)
         f.close()
@@ -79,8 +81,7 @@ def show_help(message):
 def stop(command):
     try:
         for bot in bots:
-            bot.kill()
-        connection_process.kill()
+            bot.join()
     except AttributeError:
         return
     print('\x1b[32;1mSuccessfully\x1b[39;49m')
@@ -123,7 +124,7 @@ def join_queue(command):
     try:
         global delay
         delay = int(command.split()[2])
-        f = open(current_path + '/' + 'channels.txt')
+        f = open(channels_path)
         for channel in f.read().splitlines():
             channels.append(channel)
         f.close()
@@ -136,13 +137,13 @@ def join_queue(command):
         pass
 
     args = 'join_queue'
-    global connection_process
     connection_process = multiprocessing.Process(target=connect_tokens, args=(args,))
     connection_process.start()
 
 
 def connect_tokens(run_args):
-    if music_file:
+    global bots
+    if music_path:
         for token in token_list:
             client = Bot()
             token_dict[client] = token
@@ -157,10 +158,10 @@ def connect_tokens(run_args):
 
 
 def set_music(command):
-    global music_file
+    global music_path
     try:
-        music_file = command.split()[2]
-        f = open(current_path + "/" + music_file, 'rb')
+        music_path = os.path.join(dirname, command.split()[2])
+        f = open(music_path)
         f.close()
         print(f'\x1b[32;1mSuccessfully\x1b[39;49m')
     except IndexError:
@@ -179,6 +180,7 @@ class Bot(discord.Client):
         for ch_id in channels:
             ch_id = int(ch_id)
             if invite_link:
+                print('[LOG] Joining the server...')
                 proxy = 'http://' + next(proxy_pool)
                 token = token_dict[self]
                 headers = {
@@ -190,14 +192,15 @@ class Bot(discord.Client):
                     print("[LOG] Bot joined server")
                 else:
                     print("[WARN]\x1b[31;1m Cannot join the server. Try to change IP or use another tokens\x1b[39;49m")
+            print('[LOG] Joining the voice...')
             channel = await self.fetch_channel(ch_id)
             vc = await channel.connect()
             vc.play(discord.FFmpegPCMAudio(
-                source=current_path + '/' + music_file))
+                source=music_path))
             print("[LOG] Bot entered the room")
             time.sleep(delay)
             await vc.disconnect()
-            await self.close()
+        await self.close()
 
     async def on_error(self, event_method, *args, **kwargs):
         pass

@@ -3,7 +3,8 @@ import requests
 import proxygen
 from itertools import cycle
 
-current_path = os.path.dirname(os.path.realpath(__file__))
+import voice_raid
+
 url = "https://discordapp.com/api/v6/users/@me/library"
 
 proxies = proxygen.get_proxies()
@@ -11,9 +12,10 @@ proxy_pool = cycle(proxies)
 
 
 def check(filename):
-    f = open(current_path + "/" + "workingtokens.txt", "w")
+    fresh_tokens_path = os.path.join(voice_raid.dirname, filename)
+    f = open(voice_raid.tokens_path, "w")
     f.close()
-    with open(current_path + "/" + filename) as f:
+    with open(fresh_tokens_path) as f:
         tokens = []
         for line in f.read().splitlines():  # read rest of lines
             tokens.append(line)
@@ -29,7 +31,7 @@ def check(filename):
             r = requests.get(url, headers=header, proxies={"http": proxy})
             if r.status_code == 200:
                 print(u"\u001b[32;1m[+] Token Works!\u001b[0m")
-                with open(current_path + "/" + "workingtokens.txt", "a") as f:
+                with open(voice_raid.tokens_path, "a") as f:
                     f.write(token + "\n")
             elif "rate limited." in r.text:
                 print("[-] You are being rate limited.")

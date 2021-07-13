@@ -1,18 +1,11 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-import time
-import multiprocessing
-
 import commands
-import voice_raid
-import discord
 import os
-current_path = os.path.dirname(os.path.realpath(__file__))
+dirname = os.path.dirname(__file__)
+working_tokens_path = os.path.join(dirname, 'workingtokens.txt')
 
 try:
-    f = open(current_path + "/" + "workingtokens.txt")
+    f = open(working_tokens_path)
+    f.close()
 except FileNotFoundError:
     print("[WARN] \x1b[31;1mworkingtokens.txt not found\x1b[39;49m \n")
 
